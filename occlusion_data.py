@@ -28,7 +28,7 @@ class CarDataset(data.Dataset):
 
     def _init_dataset(self, limit: int):
         """
-        Creates a mapping between image path and the
+        Creates a mapping between image pretrained_path and the
         corresponding label.
         The images are not loaded since it would be memory
         inefficient.
@@ -39,6 +39,30 @@ class CarDataset(data.Dataset):
             self.samples.append([car_path, label])
             if len(self.samples) >= limit != -1:
                 break
+
+
+class TestDataset(data.Dataset):
+    """
+    Dataset containing the images to be used for testing (the occluded images)
+    """
+    def __init__(self, data_root, limit=-1):
+        self.samples = []
+        self.data_root = data_root
+        self._init_dataset(limit)
+
+    def __len__(self):
+        return len(self.samples)
+
+    def __getitem__(self, index):
+        return self.samples[index]
+
+    def _init_dataset(self, limit: int):
+        for filename in os.listdir(self.data_root):
+            img_path = os.path.join(self.data_root, filename)
+
+            self.samples.append([preprocess_image(img_path), 199.0])
+            if len(self.samples) >= limit != -1:
+                return
 
 
 def preprocess_image(img_path: str):
