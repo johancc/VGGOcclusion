@@ -28,7 +28,7 @@ def create_loss_and_optimizer(net, learning_rate=0.001):
     return loss, optimizer
 
 
-def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.001, checkpoint=True):
+def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.00001, checkpoint=True):
     # Create our loss and optimizer functions
     model.train()
     loss_fn, optimizer = create_loss_and_optimizer(model, learning_rate)
@@ -94,9 +94,9 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
 
 
 if __name__ == '__main__':
-    rate = float(input("learning rate? "))
-    limit = int(input("How many images? "))
-    epochs = int(input("epochs? "))
+    rate = float(input("Learning rate? (Preferably a small number like 0.000001)\n"))
+    limit = int(input("How many images? \n"))
+    epochs = int(input("Epochs?\n"))
     batch_size = 1 # Batch training doesn't work yet.
     train_runner(batch_size=batch_size, n_epochs=epochs, learning_rate=rate, limit=limit)
 
