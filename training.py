@@ -4,16 +4,16 @@ import time
 from torch.nn import Module
 from torch import squeeze
 from torch import save
-from occlusion_data import CarDataset
 from torch.utils.data import DataLoader
 from network import VGGOcclusion
+from imagenet_dataset import ImageNetData
 import os
 
 statedict_path = os.getcwd() + "/vgg16-397923af.pth"
 
 
-def get_train_loader(batch_size, dataset_path: str = "cars_train", limit: int = -1):
-    dataset = CarDataset(dataset_path, limit)
+def get_train_loader(batch_size, dataset_path: str = "image_net_data/", limit: int = -1):
+    dataset = ImageNetData(dataset_path, limit)
     data_loader = DataLoader(dataset,
                              batch_size=batch_size,
                              shuffle=True, num_workers=1)
@@ -65,6 +65,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
             i += 1
             if i % len(data_loader)//10 == 0:
                 print("Epoch {}% done.".format(i / len(data_loader) * 100))
+
         running_loss = sum(losses) - running_loss
         print("Epoch {}, \t train_loss: {:.2f} took: {:.2f}s".format(
             epoch + 1, running_loss, time.time() - start_time))
@@ -80,15 +81,17 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
     print("learning_rate=", learning_rate)
     print("=" * 30)
     model = VGGOcclusion()
-    data = get_train_loader(batch_size, limit=limit)
+    # Using the full image net dataset
+    imagenet_data = ImageNetData("image_net_data")
+    image_loader = DataLoader(imagenet_data, batch_size=batch_size)
     output_path = "output{}-{}-{}.pth".format(batch_size, learning_rate, limit)
-    train(model, data)
+    train(model, image_loader, n_epochs, learning_rate)
     save(model.state_dict(), output_path)
     print('saved model to ', output_path)
     return model
 
 
 if __name__ == '__main__':
-    train_runner(batch_size=2, n_epochs=2, learning_rate=0.001, limit=10)
+    train_runner(batch_size=50, n_epochs=2, learning_rate=0.001, limit=500)
 
 
