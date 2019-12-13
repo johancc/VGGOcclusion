@@ -37,7 +37,7 @@ def testOcclusion(model, batch_size, n):
                 return correct/n
             prediction = model(image).data.numpy().argmax()
             result = mapping[prediction]
-            print("got classified as {}, correct label {}".format(result, mapping[label]))
+            print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
             if("car" in result or "jeep" in result or "convertible" in result or "taxi" in result) \
                     and ("cart" not in result):
                 correct += 1
@@ -65,7 +65,7 @@ def testNoOcclusion(model, batch_size, n):
             prediction = model(image).data.numpy().argmax()
 
             result = mapping[prediction]
-            print("got classified as {}, correct label {}".format(result, mapping[label]))
+            print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
             if("car" in result or "jeep" in result or "convertible" in result or "taxi" in result) and ("cart" not in result):
                 correct += 1
             t += 1
