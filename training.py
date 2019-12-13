@@ -72,6 +72,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
         # We should save at every epoch.
         if checkpoint:
             out_path = "checkpoint-{}-{}-{}.pth".format(epoch, learning_rate, limit)
+            print("saving checkpoint for epoch ", epoch)
             save(model.state_dict(), out_path)
 
     print("Training finished, took {:.2f}s".format(time.time() - training_start_time))
