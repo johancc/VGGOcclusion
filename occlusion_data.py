@@ -7,7 +7,15 @@ import torchvision.transforms as transforms
 from PIL import Image
 from torch.utils import data
 
-car_index = 199  # TODO: Find the correct index
+car_index = 751  # TODO: Find the correct index
+
+img_size = 224
+transform_pipeline = transforms.Compose(
+    [transforms.Resize((img_size, img_size)),
+     transforms.ToTensor(),
+     transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                          std=[0.229, 0.224, 0.225])]
+)
 
 
 class CarDataset(data.Dataset):
@@ -35,8 +43,7 @@ class CarDataset(data.Dataset):
         """
         for filename in os.listdir(self.data_root):
             car_path = os.path.join(self.data_root, filename)
-            label = 199.0
-            self.samples.append([car_path, label])
+            self.samples.append([car_path, car_index])
             if len(self.samples) >= limit != -1:
                 break
 
@@ -60,7 +67,7 @@ class TestDataset(data.Dataset):
         for filename in os.listdir(self.data_root):
             img_path = os.path.join(self.data_root, filename)
 
-            self.samples.append([preprocess_image(img_path), 199.0])
+            self.samples.append([preprocess_image(img_path), car_index])
             if len(self.samples) >= limit != -1:
                 return
 
@@ -72,13 +79,7 @@ def preprocess_image(img_path: str):
     """
     img = Image.open(img_path)
     # Now we need to preprocess the image
-    img_size = 224
-    transform_pipeline = transforms.Compose(
-        [transforms.Resize((img_size, img_size)),
-         transforms.ToTensor(),
-         transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                              std=[0.229, 0.224, 0.225])]
-    )
+
     img = transform_pipeline(img)
     # Tensor Dims = (num_input_images,
     #               num_color_channels,

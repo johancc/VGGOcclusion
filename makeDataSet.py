@@ -3,10 +3,10 @@ import os
 import random
 import math
 
-dirbase = "C:/Users/selen/coco/"
-imgPath = "/media/john/KINGSTON/cocosci_code/cars_train/" #"C:/Users/selen/coco/images/"
-shapePath = "/media/john/KINGSTON/cocosci_code/objects/" #"C:/Users/selen/coco/objects/"
-finalimgPath = "/media/john/KINGSTON/cocosci_code/finalImgs/trainingImages/" #"C:/Users/selen/coco/final/"
+cwd = os.getcwd() + "/"
+imgPath = cwd + "cars_train/" 
+shapePath = cwd + "objects/"
+finalimgPath = cwd + "trial_imgs/test/"
 
 def composite(imFile1, imFile2): #put im1 on top of im2, v1
     try:
@@ -126,4 +126,4 @@ def traverseDir(dirPath):
 #trial = composite(shapePath+"0.42_703204_sk_lg.jpg", imgPath+"car3.jpg")
 #trial.show()
 
-makeAllImages(shapePath, imgPath, finalimgPath, "", 224, 500)
+makeAllImages(shapePath, imgPath, finalimgPath, "", 224, 1)

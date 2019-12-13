@@ -4,6 +4,7 @@ Loads the dataset from image net.
 from utils import preprocess_image, create_dataset_from_main_directory
 from torch.utils import data
 
+import os
 
 
 class ImageNetData(data.Dataset):
@@ -22,6 +23,7 @@ class ImageNetData(data.Dataset):
         img_path, label = self.samples[index]
         return preprocess_image(img_path), label
 
+
     def _init_dataset(self, limit: int):
         """
         Populates the samples list with a tuple (path, label)
@@ -35,8 +37,3 @@ class ImageNetData(data.Dataset):
                 self.samples.append([image_path, label])
                 if len(self.samples) >= limit != -1:
                     break
-
-
-if __name__ == '__main__':
-    data = ImageNetData()
-    print(len(data))

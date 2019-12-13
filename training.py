@@ -46,7 +46,7 @@ def make_train_step(model, loss_fn, optimizer):
     return train_step
 
 
-def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.001):
+def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.001, checkpoint=True):
     # Create our loss and optimizer functions
     loss_fn, optimizer = create_loss_and_optimizer(model, learning_rate)
 
@@ -69,6 +69,10 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
         running_loss = sum(losses) - running_loss
         print("Epoch {}, \t train_loss: {:.2f} took: {:.2f}s".format(
             epoch + 1, running_loss, time.time() - start_time))
+        # We should save at every epoch.
+        if checkpoint:
+            out_path = "checkpoint-{}-{}-{}.pth".format(epoch, learning_rate, limit)
+            save(model.state_dict(), out_path)
 
     print("Training finished, took {:.2f}s".format(time.time() - training_start_time))
 
@@ -82,7 +86,7 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
     print("=" * 30)
     model = VGGOcclusion()
     # Using the full image net dataset
-    imagenet_data = ImageNetData("image_net_data")
+    imagenet_data = ImageNetData("imagenet", limit)
     image_loader = DataLoader(imagenet_data, batch_size=batch_size)
     output_path = "output{}-{}-{}.pth".format(batch_size, learning_rate, limit)
     train(model, image_loader, n_epochs, learning_rate)
