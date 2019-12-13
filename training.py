@@ -64,7 +64,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
             losses.append(loss)
             i += 1
             if i % len(data_loader)//10 == 0:
-                print("Epoch {}% done.".format(i / len(data_loader) * 100))
+                print("Epoch {}% done.".format(i / len(data_loader)))
 
         running_loss = sum(losses) - running_loss
         print("Epoch {}, \t train_loss: {:.2f} took: {:.2f}s".format(
@@ -92,10 +92,10 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
 
 
 if __name__ == '__main__':
-    batch_size = int(input("batch size?"))
-    rate = float(input("learning rate?"))
-    limit = int(input("How many images?"))
-    epochs = int(input("epochs?"))
+    batch_size = int(input("batch size? "))
+    rate = float(input("learning rate? "))
+    limit = int(input("How many images? "))
+    epochs = int(input("epochs? "))
     train_runner(batch_size=batch_size, n_epochs=epochs, learning_rate=rate, limit=limit)
 
 
