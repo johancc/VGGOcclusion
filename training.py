@@ -57,7 +57,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
             loss.backward()
             optimizer.step()
 
-            print("Target: {}, Prediction: {}".format(label, out.data.numpy().argmax()))
+            # print("Target: {}, Prediction: {}".format(label, out.data.numpy().argmax()))
             # print statistics
             running_loss += loss.item()
             if i % 2000 == 1999:    # print every 2000 mini-batches
