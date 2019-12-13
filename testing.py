@@ -6,9 +6,6 @@ from torch import load
 from network import labels as mapping
 import os
 
-cwd = os.getcwd() + "/"
-statedict_path = os.getcwd() + "/vgg16-397923af.pth"
-
 
 def get_test_loader(batch_size, dataset_path: str = "test_imgs", limit: int = -1):
     dataset = TestDataset(dataset_path, limit)
@@ -100,14 +97,6 @@ if __name__ == '__main__':
     resnetOutcomeOcclusion = testOcclusion(resnetModel, 1, 500)
     resnetOutcomeNoOcclusion = testNoOcclusion(resnetModel, 1, 500)
 
-    state_dict = torch.load(statedict_path)
-    vgg16 = models.vgg16()
-    vgg16.load_state_dict(state_dict)
-    vgg16OutcomeOcclusion = testOcclusion(vgg16, 1, 500)
-    vgg16OutcomeNoOcclusion = testNoOcclusion(vgg16, 1, 500)
-
-    print("VGG16 classified %.3f"%(vgg16OutcomeOcclusion*100) + "% of the occluded images correctly.")
-    print("VGG16 classified %.3f"%(vgg16OutcomeNoOcclusion*100) + "% of the non-occluded images correctly.")
     print("AlexNet classified %.3f"%(alexnetOutcomeOcclusion*100) + "% of the occluded images correctly.")
     print("AlexNet classified %.3f"%(alexnetOutcomeNoOcclusion*100) + "% of the non-occluded images correctly.")
     print("ResNet classified %.3f"%(resnetOutcomeOcclusion*100) + "% of the occluded images correctly.")
