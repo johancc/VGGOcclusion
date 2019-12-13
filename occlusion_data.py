@@ -66,7 +66,6 @@ class TestDataset(data.Dataset):
     def _init_dataset(self, limit: int):
         for filename in os.listdir(self.data_root):
             img_path = os.path.join(self.data_root, filename)
-
             self.samples.append([preprocess_image(img_path), car_index])
             if len(self.samples) >= limit != -1:
                 return

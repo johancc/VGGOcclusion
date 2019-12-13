@@ -3,7 +3,7 @@ Loads the dataset from image net.
 """
 from utils import preprocess_image, create_dataset_from_main_directory
 from torch.utils import data
-
+import random
 import os
 
 
@@ -11,7 +11,7 @@ class ImageNetData(data.Dataset):
     """
     Dataset of various classes from ImageNet
     """
-    def __init__(self, data_root: str = "image_net_data/", limit=-1):
+    def __init__(self, data_root: str = "imagenet/", limit=-1):
         self.samples = []
         self.data_root = data_root
         self._init_dataset(limit)
@@ -21,6 +21,7 @@ class ImageNetData(data.Dataset):
 
     def __getitem__(self, index):
         img_path, label = self.samples[index]
+        # print("asking for index {} with label {}".format(index, label))
         return preprocess_image(img_path), label
 
 
@@ -30,10 +31,13 @@ class ImageNetData(data.Dataset):
         The images are not loaded since it would be memory
         inefficient.
         """
-
         dataset = create_dataset_from_main_directory(self.data_root)
+        samples = []
         for image_path, label in dataset.items():
             if label is not None:
-                self.samples.append([image_path, label])
-                if len(self.samples) >= limit != -1:
-                    break
+                samples.append((image_path, label))
+        if limit == -1:
+            limit = len(samples)
+        # Shuffle to avoid overfitting!
+        random.shuffle(samples)
+        self.samples = samples[:limit]

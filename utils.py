@@ -34,7 +34,7 @@ def filepath_to_label(filepath: str)->int:
     Assumes that the name of the folder the image is contained in is the class name.
     i.e some/path/bird/123.jpg for class bird
     """
-    root_path, folder_name = os.path.split(os.path.dirname(filepath))
+    _, folder_name = os.path.split(os.path.dirname(filepath))
     return class_name_to_id(folder_name)
 
 
@@ -45,7 +45,7 @@ def create_dataset_from_main_directory(directory: str) -> dict:
     are the class name.
     """
     dataset = {}
-    for (dirpath, dirnames, filenames) in os.walk(directory):
+    for (dirpath, _, filenames) in os.walk(directory):
         if dirpath == directory:
             continue
         for filename in filenames:

@@ -40,13 +40,17 @@ class VGGOcclusion(nn.Module):
     This model modifies a pre-trained VGG16 model to have
     better object detection under occlusion.
     """
-    def __init__(self, pretrained_path: str = None):
+    def __init__(self, frozen_vgg: bool = False):
         super(VGGOcclusion, self).__init__()
 
         d_out = 1000  # Output dimension, there are 1000 classes
         # Everything but the last layer of the features
-        features, avg, classifier = get_frozen_vgg(pretrained_path).children()
-
+        if frozen_vgg:
+            features, _, _ = get_frozen_vgg().children()
+        else:
+            features, _, _ = models.vgg16(pretrained=True).children()
+        
+        h = 14848  # Input dimension to the classifier
         # We want the output of the 4th max pool layer
         features = list(features)[:-7]
         features.extend(
@@ -55,18 +59,23 @@ class VGGOcclusion(nn.Module):
                 nn.Conv2d(512, 512, kernel_size=(15, 15), stride=(1, 1), padding=(1, 1)),
                 # This layer enforces the spatial constraints.
                 SpatialPyramidPooling([4, 3, 2]),
+                # Make it into one supervector
+                nn.Linear(in_features=h, out_features=4096, bias=True),
                 # Makes the network robust against over fitting
-                nn.Dropout(0.1),
+                nn.Dropout(0.5),
             ]
         )
         self.features = nn.Sequential(*features)
-        h = 14848  # Input dimension to the classifier
         # TODO: Make sure this is the correct dimension size.
         #       The number was found by working backwards from the output of the previous_layer.
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=h, out_features=d_out, bias=True),
+            nn.Linear(in_features=4096, out_features=4096, bias=True),
+
+            nn.ReLU(inplace=True),
+
+            nn.Linear(in_features=4096, out_features=d_out, bias=True)
             # The fully connected layer should be followed by a non-linearity
-            nn.Softmax(1)
+            #nn.Softmax(1)
         )
 
     def forward(self, x):
@@ -95,6 +104,9 @@ def classify_image(img_path: str, model=None, pretrained_state_path: str = None)
 
 if __name__ == '__main__':
     path = input("Path of the image to classify: \n")
-    print("Predicted label from the original network: ", classify_image(path, None, None))
+    print("Predicted label from the original network: ", classify_image(path))
     net = VGGOcclusion()
+    f = input("Path to the pretrained network? \n")
+    state_dict = torch.load(f)
+    net.load_state_dict(state_dict)
     print("Predicted label from the modified network: ", classify_image(path, net, None))

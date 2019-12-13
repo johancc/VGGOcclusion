@@ -72,9 +72,10 @@ def testNoOcclusion(model, batch_size, n):
     return correct/n
 
 
-def test_local_models():
-    files = os.listdir(os.path.curdir)
+def test_local_models(model_dir: str = "models/"):
+    files = os.listdir(model_dir)
     for file in files:
+        file = os.path.join(model_dir, file)
         if ".pth" in file:
             print("Testing {}".format(file))
             state_dict = load(file)
