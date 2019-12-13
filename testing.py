@@ -27,7 +27,6 @@ def testOcclusion(model, batch_size, n):
     model.eval()
     # Get testing data
     test_loader = get_test_loader(batch_size)
-
     correct = 0
 
     t = 0
@@ -37,11 +36,13 @@ def testOcclusion(model, batch_size, n):
                 return correct/n
             prediction = model(image).data.numpy().argmax()
             result = mapping[prediction]
-            print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
+            # print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
             if("car" in result or "jeep" in result or "convertible" in result or "taxi" in result) \
                     and ("cart" not in result):
                 correct += 1
             t += 1
+            if t % 100 == 0:
+                print("{}/{} tested.".format(t, n))
     return correct/n
 
 
@@ -65,10 +66,12 @@ def testNoOcclusion(model, batch_size, n):
             prediction = model(image).data.numpy().argmax()
 
             result = mapping[prediction]
-            print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
+            # print("got classified as {}, correct label {}".format(result, mapping[int(label.item())]))
             if("car" in result or "jeep" in result or "convertible" in result or "taxi" in result) and ("cart" not in result):
                 correct += 1
             t += 1
+            if t % 100 == 0:
+                print("{}/{} tested.".format(t, n))
     return correct/n
 
 
