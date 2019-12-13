@@ -92,6 +92,10 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
 
 
 if __name__ == '__main__':
-    train_runner(batch_size=50, n_epochs=2, learning_rate=0.001, limit=500)
+    batch_size = int(input("batch size?"))
+    rate = float(input("learning rate?"))
+    limit = int(input("How many images?"))
+    epochs = int(input("epochs?"))
+    train_runner(batch_size=batch_size, n_epochs=epochs, learning_rate=rate, limit=limit)
 
 

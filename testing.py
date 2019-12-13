@@ -66,20 +66,28 @@ def testNoOcclusion(model, batch_size, n):
             prediction = model(image).data.numpy().argmax()
 
             result = mapping[prediction]
-            print(result)
             if("car" in result or "jeep" in result or "convertible" in result or "taxi" in result) and ("cart" not in result):
                 correct += 1
             t += 1
     return correct/n
 
 
+def test_local_models():
+    files = os.listdir(os.path.curdir)
+    for file in files:
+        if ".pth" in file:
+            print("Testing {}".format(file))
+            state_dict = load(file)
+            model = VGGOcclusion()
+            model.load_state_dict(state_dict)
+            outcomeOcclusion = testOcclusion(model, 1, 500)
+            outcomeNoOcclusion = testNoOcclusion(model, 1, 500)
+            print("Results: {} occlusion, {} no occlusion".format(outcomeOcclusion, outcomeNoOcclusion))
+
+
 if __name__ == '__main__':
     from network import VGGOcclusion
-    state_dict = load("output2-0.001-10.pth")
-    model = VGGOcclusion() #"output2-0.001-10.pth")
-    model.load_state_dict(state_dict)
-    outcomeOcclusion = testOcclusion(model, 1, 500)
-    outcomeNoOcclusion = testNoOcclusion(model, 1, 500)
+    test_local_models()
 
     alexnetModel = models.alexnet(pretrained="True")
     alexnetOutcomeOcclusion = testOcclusion(alexnetModel, 1, 500)
@@ -95,8 +103,6 @@ if __name__ == '__main__':
     vgg16OutcomeOcclusion = testOcclusion(vgg16, 1, 500)
     vgg16OutcomeNoOcclusion = testNoOcclusion(vgg16, 1, 500)
 
-    print("Our network classified %.3f"%(outcomeOcclusion*100) + "% of the occluded images correctly.")
-    print("Our network classified %.3f"%(outcomeNoOcclusion*100) + "% of the non-occluded images correctly.")
     print("VGG16 classified %.3f"%(vgg16OutcomeOcclusion*100) + "% of the occluded images correctly.")
     print("VGG16 classified %.3f"%(vgg16OutcomeNoOcclusion*100) + "% of the non-occluded images correctly.")
     print("AlexNet classified %.3f"%(alexnetOutcomeOcclusion*100) + "% of the occluded images correctly.")
