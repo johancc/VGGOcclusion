@@ -10,8 +10,11 @@ from imagenet_dataset import ImageNetData
 import os
 import torch
 
-statedict_path = os.getcwd() + "/vgg16-397923af.pth"
 
+if torch.cuda.is_available():
+    dtype = torch.cuda.FloatTensor
+else:
+    dtype = torch.FloatTensor
 
 def get_train_loader(batch_size, dataset_path: str = "imagenet/", limit: int = -1):
     dataset = ImageNetData(dataset_path, limit)

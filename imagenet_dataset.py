@@ -3,6 +3,7 @@ Loads the dataset from image net.
 """
 from utils import preprocess_image, create_dataset_from_main_directory
 from torch.utils import data
+from torch import Tensor
 import random
 import os
 
@@ -33,6 +34,7 @@ class ImageNetData(data.Dataset):
         """
         dataset = create_dataset_from_main_directory(self.data_root)
         samples = []
+    
         for image_path, label in dataset.items():
             if label is not None:
                 samples.append((image_path, label))
@@ -40,4 +42,9 @@ class ImageNetData(data.Dataset):
             limit = len(samples)
         # Shuffle to avoid overfitting!
         random.shuffle(samples)
-        self.samples = samples[:limit]
+
+        for image, label in samples:
+            if len(self.samples) >= limit:
+                break
+            processed_image = preprocess_image(image).cuda()
+            self.samples.append((processed_image, label))
