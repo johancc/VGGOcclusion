@@ -4,6 +4,7 @@ Loads the dataset from image net.
 from utils import preprocess_image, create_dataset_from_main_directory
 from torch.utils import data
 from torch import Tensor
+import torch
 import random
 import os
 
@@ -21,9 +22,8 @@ class ImageNetData(data.Dataset):
         return len(self.samples)
 
     def __getitem__(self, index):
-        img_path, label = self.samples[index]
         # print("asking for index {} with label {}".format(index, label))
-        return preprocess_image(img_path), label
+        return self.samples[index]
 
 
     def _init_dataset(self, limit: int):
@@ -46,5 +46,8 @@ class ImageNetData(data.Dataset):
         for image, label in samples:
             if len(self.samples) >= limit:
                 break
-            processed_image = preprocess_image(image).cuda()
+        
+            processed_image = preprocess_image(image)
+            if torch.cuda.is_available():
+                processed_image = processed_image.cuda()
             self.samples.append((processed_image, label))
