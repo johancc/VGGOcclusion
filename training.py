@@ -5,7 +5,7 @@ from torch.nn import Module
 from torch import squeeze
 from torch import save
 from torch.utils.data import DataLoader
-from network import VGGOcclusion
+from network import VGGOcclusion, VGGOcclusion2
 from imagenet_dataset import ImageNetData
 import os
 import torch
@@ -81,7 +81,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
     print("Training finished, took {:.2f}s".format(time.time() - training_start_time))
 
 
-def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
+def train_runner(batch_size, n_epochs, learning_rate, limit=-1, version=1):
     # Print all of the hyper parameters of the training iteration:
     print("===== HYPERPARAMETERS =====")
     print("epochs=", n_epochs)
@@ -89,8 +89,11 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
     print("image limit=", limit)
     print("=" * 30)
 
-    
-    model = VGGOcclusion(frozen_vgg=False)
+    if version == 1:
+        model = VGGOcclusion(frozen_vgg=True)
+    else:
+        model = VGGOcclusion2(frozen_vgg=True)
+   #model = VGGOcclusion(frozen_vgg=True)
     if torch.cuda.is_available():
         model = model.cuda()
     # Using the full image net dataset
@@ -107,7 +110,8 @@ if __name__ == '__main__':
     rate = float(input("Learning rate? (Preferably a small number like 0.000001)\n"))
     limit = int(input("How many images? \n"))
     epochs = int(input("Epochs?\n"))
+    version = int(input("Version 1 or 2?\n"))
     batch_size = 1 # Batch training doesn't work yet.
-    train_runner(batch_size=batch_size, n_epochs=epochs, learning_rate=rate, limit=limit)
+    train_runner(batch_size=batch_size, n_epochs=epochs, learning_rate=rate, limit=limit, version=version)
 
 
