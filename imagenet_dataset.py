@@ -23,8 +23,11 @@ class ImageNetData(data.Dataset):
 
     def __getitem__(self, index):
         # print("asking for index {} with label {}".format(index, label))
-        return self.samples[index]
-
+        img_path, label = self.samples[index]
+        img = preprocess_image(img_path)
+        if torch.cuda.is_available():
+            img = img.cuda()
+        return img, label
 
     def _init_dataset(self, limit: int):
         """
@@ -42,12 +45,4 @@ class ImageNetData(data.Dataset):
             limit = len(samples)
         # Shuffle to avoid overfitting!
         random.shuffle(samples)
-
-        for image, label in samples:
-            if len(self.samples) >= limit:
-                break
-        
-            processed_image = preprocess_image(image)
-            if torch.cuda.is_available():
-                processed_image = processed_image.cuda()
-            self.samples.append((processed_image, label))
+        self.samples = samples[:limit]
