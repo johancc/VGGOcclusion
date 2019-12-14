@@ -50,8 +50,8 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
             # zero the parameter gradients
             
             if torch.cuda.is_available():
-                out = out.cuda()
-
+                point = point.cuda()
+                label = label.cuda()
             # forward + backward + optimize
             out = model(point)
             label = label.long()
