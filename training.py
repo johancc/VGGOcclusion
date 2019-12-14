@@ -34,7 +34,7 @@ def create_loss_and_optimizer(net, learning_rate=0.001):
     return loss, optimizer
 
 
-def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.00001, checkpoint=True):
+def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_rate: float = 0.00001, checkpoint=True, version=1):
     # Create our loss and optimizer functions
     model.train()
     loss_fn, optimizer = create_loss_and_optimizer(model, learning_rate)
@@ -74,7 +74,7 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
                 running_loss = 0.0
             # We should save at every epoch.
         if checkpoint:
-            out_path = "models/checkpoint-{}-{}-{}.pth".format(epoch, learning_rate, limit)
+            out_path = "models/checkpoint-{}-{}-{}-v{}.pth".format(epoch, learning_rate, limit, version)
             print("saving checkpoint for epoch ", epoch)
             save(model.state_dict(), out_path)
 
@@ -100,7 +100,7 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1, version=1):
     imagenet_data = ImageNetData("imagenet", limit)
     image_loader = DataLoader(imagenet_data, batch_size=batch_size, shuffle=True)
     output_path = "models/output-{}-{}-{}.pth".format(batch_size, learning_rate, limit)
-    train(model, image_loader, n_epochs, learning_rate)
+    train(model, image_loader, n_epochs, learning_rate, version)
     save(model.state_dict(), output_path)
     print('saved model to ', output_path)
     return model
