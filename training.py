@@ -8,6 +8,7 @@ from torch.utils.data import DataLoader
 from network import VGGOcclusion
 from imagenet_dataset import ImageNetData
 import os
+import torch
 
 statedict_path = os.getcwd() + "/vgg16-397923af.pth"
 
@@ -22,6 +23,8 @@ def get_train_loader(batch_size, dataset_path: str = "imagenet/", limit: int = -
 
 def create_loss_and_optimizer(net, learning_rate=0.001):
     loss = nn.CrossEntropyLoss()
+    if torch.cuda.is_available():
+        loss = loss.cuda()
     #optimizer = optim.Adam(net.parameters(), lr=learning_rate)
     optimizer = optim.SGD(net.parameters(), lr=learning_rate, momentum=0.9)
     #optimizer = optim.Adagrad(net.parameters(), lr=learning_rate)
@@ -46,6 +49,8 @@ def train(model: Module, data_loader: DataLoader, n_epochs: int = 10, learning_r
             point = squeeze(inputs, dim=0)
             # zero the parameter gradients
             
+            if torch.cuda.is_available():
+                out = out.cuda()
 
             # forward + backward + optimize
             out = model(point)
@@ -83,6 +88,8 @@ def train_runner(batch_size, n_epochs, learning_rate, limit=-1):
 
     
     model = VGGOcclusion(frozen_vgg=False)
+    if torch.cuda.is_available():
+        model = model.cuda()
     # Using the full image net dataset
     imagenet_data = ImageNetData("imagenet", limit)
     image_loader = DataLoader(imagenet_data, batch_size=batch_size, shuffle=True)
